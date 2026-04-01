@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Webpage Summarizer MVP",
+  "version": "1.0",
+  "description": "Extracts webpage content and forms for analysis by the FastAPI backend.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*"
+  ]
+}
