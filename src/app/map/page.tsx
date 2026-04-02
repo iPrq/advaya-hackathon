@@ -11,6 +11,7 @@ import StatusBadge from '@/components/components_map/StatusBadge';
 import AlertBanner from '@/components/components_map/AlertBanner';
 import CommunityOverlay from '@/components/components_map/CommunityOverlay';
 import { useCommunity } from '@/hooks/useCommunity';
+import BottomNav from '@/components/BottomNav';
 
 // Leaflet uses 'window' which causes SSR issues, so we dynamic import MapView
 const DynamicMapView = dynamic(() => import('@/components/components_map/MapView'), {
@@ -220,6 +221,7 @@ export default function MapPage() {
         isLoaded={isLoaded}
         onSelectEvent={handleSelectEvent}
       />
+      <BottomNav />
     </main>
   );
 }

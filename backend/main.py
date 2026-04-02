@@ -12,6 +12,7 @@ import numpy as np
 from scipy.ndimage import gaussian_filter1d
 import joblib
 from google import genai
+import tempfile
 from groq import Groq as GroqClient
 from dotenv import load_dotenv
 
@@ -589,8 +590,13 @@ async def analyze_document(request: AnalyzeRequest):
             )
         )
         
-        with open("output.md", "w", encoding="utf-8") as f:
-            f.write(response.text)
+        # Use tempfile since local directory may be read-only
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".md") as f:
+                f.write(response.text.encode("utf-8"))
+                logger.info(f"Analysis saved to temp file: {f.name}")
+        except Exception as e:
+            logger.warning(f"Could not save temp analysis file: {e}")
 
         text = response.text.strip()
         if text.startswith('```json'):

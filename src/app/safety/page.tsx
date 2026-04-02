@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { LineChart, Line, ResponsiveContainer, YAxis, Tooltip } from 'recharts';
 import { Activity, ShieldCheck, WifiOff } from 'lucide-react';
+import BottomNav from '@/components/BottomNav';
 
 export default function SafetyPage() {
   const [emergencyEmail, setEmergencyEmail] = useState('');
@@ -51,16 +52,27 @@ export default function SafetyPage() {
 
   return (
     <div className="min-h-screen text-on-surface bg-background">
-      <main className="max-w-4xl mx-auto px-6 pt-12 pb-32">
-        <div className="bg-surface-container-low rounded-[2rem] p-8 border border-white/50 shadow-sm relative overflow-hidden">
+      {/* HEADER */}
+      <header className="bg-surface/80 backdrop-blur-md top-0 sticky z-50 flex justify-between items-center w-full px-6 py-4">
+        <div className="flex items-center gap-3">
+          <Link href="/home" className="text-outline hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">arrow_back</span>
+          </Link>
+          <h1 className="text-xl font-headline font-bold text-on-surface tracking-tight">Safety</h1>
+        </div>
+        <div className="w-2 h-2 rounded-full bg-emerald-500" title="Monitoring active" />
+      </header>
+
+      <main className="max-w-4xl mx-auto px-6 pt-8 pb-32">
+        <div className="bg-surface-container-low rounded-[2rem] p-8 border border-surface-container shadow-sm relative overflow-hidden">
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-4 text-primary">
-              <span className="material-symbols-outlined text-3xl">security</span>
-              <h2 className="text-3xl font-headline font-extrabold text-on-surface">Aegis Safety</h2>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="material-symbols-outlined text-2xl text-primary">security</span>
+              <h2 className="text-2xl font-headline font-extrabold text-on-surface">Fall Detection</h2>
             </div>
             <p className="text-on-surface-variant font-body mb-8">
-              Zero-Camera Wi-Fi Fall Detection is <strong className="text-emerald-600">Active</strong> in the background. 
-              If the Neural Network detects a fall, it will automatically alert your emergency contact.
+              Wi-Fi CSI monitoring is <strong className="text-emerald-600">active</strong> in the background.
+              Your emergency contact receives an instant alert if a fall is detected.
             </p>
 
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-surface-container mb-6">
@@ -149,29 +161,7 @@ export default function SafetyPage() {
         </div>
       </main>
 
-      {/* BOTTOM NAV BAR (Consolidated) */}
-      <nav className="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container-lowest/90 backdrop-blur-xl rounded-t-[2rem] shadow-[0_-8px_32px_rgba(0,0,0,0.06)] border border-surface-container">
-        <Link href="/" className="flex flex-col items-center justify-center text-outline hover:text-primary px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">medical_services</span>
-          <span className="text-[10px] font-medium font-body mt-1">Home</span>
-        </Link>
-        <div className="bg-secondary-container text-on-secondary-container flex flex-col items-center justify-center rounded-2xl px-5 py-2.5 active:scale-95 transition-all outline-none shadow-sm">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
-          <span className="text-[10px] font-bold font-body mt-1">Safety</span>
-        </div>
-        <Link href="/web" className="flex flex-col items-center justify-center text-outline hover:text-primary px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">language</span>
-          <span className="text-[10px] font-medium font-body mt-1">Web</span>
-        </Link>
-        <Link href="/finance" className="flex flex-col items-center justify-center text-outline hover:text-primary px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">payments</span>
-          <span className="text-[10px] font-medium font-body mt-1">Finance</span>
-        </Link>
-        <Link href="/map" className="flex flex-col items-center justify-center text-outline hover:text-primary px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">map</span>
-          <span className="text-[10px] font-medium font-body mt-1">Map</span>
-        </Link>
-      </nav>
+      <BottomNav />
     </div>
   );
 }

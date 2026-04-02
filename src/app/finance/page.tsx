@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { FinanceTransaction } from '@/lib/types';
 import { smsService } from '@/services/smsService';
 import { useSMSListener } from '@/hooks/useSMSListener';
+import BottomNav from '@/components/BottomNav';
 
 const STORAGE_KEY = 'geofence_guardian_finance';
 
@@ -160,10 +161,21 @@ export default function FinancePage() {
   useSMSListener(handleIncomingTransaction);
 
   return (
-    <div className="min-h-screen bg-[#Fafafa] flex flex-col px-5 py-8 gap-8 relative pb-40">
-      {/* Header */}
-      <div className="flex flex-col gap-1 mt-4">
-        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tighter">Finance.</h1>
+    <div className="min-h-screen bg-[#Fafafa] flex flex-col relative pb-40">
+      {/* HEADER */}
+      <header className="bg-white/80 backdrop-blur-md top-0 sticky z-50 flex justify-between items-center w-full px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <Link href="/home" className="text-gray-400 hover:text-gray-900 transition-colors">
+            <span className="material-symbols-outlined">arrow_back</span>
+          </Link>
+          <h1 className="text-xl font-headline font-bold text-gray-900 tracking-tight">Finance</h1>
+        </div>
+      </header>
+
+      <div className="px-5 py-8 gap-8 flex flex-col">
+      {/* Section Title */}
+      <div className="flex flex-col gap-1 mt-2">
+        <h2 className="text-3xl font-extrabold text-gray-900 tracking-tighter">Overview</h2>
         <p className="text-gray-400 font-medium text-sm">Monitor your activity</p>
       </div>
 
@@ -446,29 +458,8 @@ export default function FinancePage() {
         )}
       </div>
 
-      {/* BOTTOM NAV BAR */}
-      <nav className="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/90 backdrop-blur-xl rounded-t-[2rem] shadow-[0_-8px_32px_rgba(0,0,0,0.06)] border-t border-gray-100">
-        <Link href="/" className="flex flex-col items-center justify-center text-gray-400 hover:text-gray-900 px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">medical_services</span>
-          <span className="text-[10px] font-medium mt-1">Home</span>
-        </Link>
-        <Link href="/safety" className="flex flex-col items-center justify-center text-gray-400 hover:text-gray-900 px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">security</span>
-          <span className="text-[10px] font-medium mt-1">Safety</span>
-        </Link>
-        <Link href="/web" className="flex flex-col items-center justify-center text-gray-400 hover:text-gray-900 px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">language</span>
-          <span className="text-[10px] font-medium mt-1">Web</span>
-        </Link>
-        <div className="flex flex-col items-center justify-center bg-gray-100 text-gray-900 rounded-2xl px-5 py-2.5 active:scale-95 transition-all outline-none shadow-sm">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>payments</span>
-          <span className="text-[10px] font-bold mt-1">Finance</span>
-        </div>
-        <Link href="/map" className="flex flex-col items-center justify-center text-gray-400 hover:text-gray-900 px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">map</span>
-          <span className="text-[10px] font-medium mt-1">Map</span>
-        </Link>
-      </nav>
+      <BottomNav />
+      </div>
     </div>
   );
 }

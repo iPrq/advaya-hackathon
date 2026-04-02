@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ChatBot from '@/components/ChatBot';
 import { Volume2, Square, Loader2 } from 'lucide-react';
+import BottomNav from '@/components/BottomNav';
 
 type SpeakLang = 'en' | 'kn' | null;
 
@@ -133,16 +134,28 @@ export default function WebSummaryPage() {
 
   return (
     <div className="min-h-screen text-on-surface bg-background">
-      <main className="max-w-4xl mx-auto px-6 pt-12 pb-32">
-        <div className="bg-surface-container-low rounded-[2rem] p-8 border border-white/50 shadow-sm relative overflow-hidden">
+      {/* HEADER */}
+      <header className="bg-surface/80 backdrop-blur-md top-0 sticky z-50 flex justify-between items-center w-full px-6 py-4">
+        <div className="flex items-center gap-3">
+          <Link href="/home" className="text-outline hover:text-primary transition-colors">
+            <span className="material-symbols-outlined">arrow_back</span>
+          </Link>
+          <h1 className="text-xl font-headline font-bold text-on-surface tracking-tight">Web Summarizer</h1>
+        </div>
+        {summaryData?.status === 'processing' && (
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+        )}
+      </header>
+
+      <main className="max-w-4xl mx-auto px-6 pt-8 pb-32">
+        <div className="bg-surface-container-low rounded-[2rem] p-8 border border-surface-container shadow-sm relative overflow-hidden">
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-4 text-primary">
-              <span className="material-symbols-outlined text-3xl">language</span>
-              <h2 className="text-3xl font-headline font-extrabold text-on-surface">Web Summarizer</h2>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="material-symbols-outlined text-2xl text-primary">language</span>
+              <h2 className="text-2xl font-headline font-extrabold text-on-surface">Page Summary</h2>
             </div>
             <p className="text-on-surface-variant font-body mb-8">
-              Live updates from your Chrome Extension. Extracted webpage contents are processed by the{' '}
-              <strong className="text-primary">Groq Llama 3.3 70B</strong> engine.
+              Live updates from your Chrome Extension. Open any webpage and the summary will appear here.
             </p>
 
             {/* User ID */}
@@ -163,17 +176,17 @@ export default function WebSummaryPage() {
               hasMeaningfulSummary ? 'bg-emerald-50 border-emerald-200' : 'bg-surface-container-lowest border-surface-container'
             }`}>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold font-headline text-lg text-on-surface">Extraction Result</h3>
+                <h3 className="font-bold font-headline text-lg text-on-surface">Summary</h3>
                 {summaryData?.status === 'processing' && (
-                  <div className="flex items-center gap-2 text-sm text-primary font-bold animate-pulse">
-                    <span className="w-3 h-3 rounded-full bg-primary animate-ping" />
-                    Processing AI
+                  <div className="flex items-center gap-2 text-sm text-outline">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                    Processing...
                   </div>
                 )}
                 {hasMeaningfulSummary && (
-                  <div className="flex items-center gap-2 text-sm text-emerald-700 font-bold">
+                  <div className="flex items-center gap-2 text-sm text-emerald-700 font-semibold">
                     <span className="material-symbols-outlined text-base">check_circle</span>
-                    Model Complete
+                    Ready
                   </div>
                 )}
               </div>
@@ -243,9 +256,7 @@ export default function WebSummaryPage() {
                   {/* Kannada text preview */}
                   {kannadaText && (
                     <div className="w-full mt-2 bg-orange-50 border border-orange-200 rounded-xl p-4 text-sm text-orange-900 leading-relaxed">
-                      <p className="text-[11px] font-bold text-orange-500 uppercase tracking-widest mb-1.5">
-                        ಕನ್ನಡ ಅನುವಾದ · Groq Llama 3.3 70B
-                      </p>
+                      <p className="text-[11px] font-bold text-orange-500 uppercase tracking-widest mb-1.5">ಕನ್ನಡ ಅನುವಾದ</p>
                       {kannadaText}
                     </div>
                   )}
@@ -258,9 +269,8 @@ export default function WebSummaryPage() {
         {/* ── Inline AI Chat ───────────────────────────────────────────────── */}
         <div className="mt-6">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-primary text-xl">✦</span>
             <h3 className="font-bold font-headline text-base text-on-surface">
-              {hasMeaningfulSummary ? 'Any doubts? Ask the AI' : 'AI Assistant'}
+              {hasMeaningfulSummary ? 'Ask a question about this page' : 'Assistant'}
             </h3>
           </div>
           <ChatBot
@@ -275,30 +285,7 @@ export default function WebSummaryPage() {
           />
         </div>
       </main>
-
-      {/* BOTTOM NAV BAR (Consolidated) */}
-      <nav className="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-surface-container-lowest/90 backdrop-blur-xl rounded-t-[2rem] shadow-[0_-8px_32px_rgba(0,0,0,0.06)] border border-surface-container">
-        <Link href="/" className="flex flex-col items-center justify-center text-outline hover:text-primary px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">medical_services</span>
-          <span className="text-[10px] font-medium font-body mt-1">Home</span>
-        </Link>
-        <Link href="/safety" className="flex flex-col items-center justify-center text-outline hover:text-primary px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">security</span>
-          <span className="text-[10px] font-medium font-body mt-1">Safety</span>
-        </Link>
-        <div className="bg-secondary-container text-on-secondary-container flex flex-col items-center justify-center rounded-2xl px-5 py-2.5 active:scale-95 transition-all outline-none shadow-sm">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>language</span>
-          <span className="text-[10px] font-bold font-body mt-1">Web</span>
-        </div>
-        <Link href="/finance" className="flex flex-col items-center justify-center text-outline hover:text-primary px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">payments</span>
-          <span className="text-[10px] font-medium font-body mt-1">Finance</span>
-        </Link>
-        <Link href="/map" className="flex flex-col items-center justify-center text-outline hover:text-primary px-4 py-2.5 active:scale-95 transition-all outline-none">
-          <span className="material-symbols-outlined">map</span>
-          <span className="text-[10px] font-medium font-body mt-1">Map</span>
-        </Link>
-      </nav>
+      <BottomNav />
     </div>
   );
 }
