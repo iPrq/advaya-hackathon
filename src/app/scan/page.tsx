@@ -84,7 +84,7 @@ export default function ScanPage() {
             <p className="text-gray-500 text-sm">Report processed securely by Aegis AI</p>
           </header>
 
-          <ReportTimeline report={report} />
+          <ReportTimeline report={report} onUpdateReport={setReport} />
 
           {/* Scan Again FAB */}
           <div className="fixed bottom-10 left-0 right-0 flex justify-center pointer-events-none z-40">
