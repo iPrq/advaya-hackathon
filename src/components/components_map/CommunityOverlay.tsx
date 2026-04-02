@@ -126,32 +126,30 @@ export default function CommunityOverlay({
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       {/* Slide-Up Panel */}
-      <div className="relative w-full h-[85vh] bg-gray-50 rounded-t-3xl shadow-2xl flex flex-col overflow-hidden animate-[slideUp_0.4s_ease-out]">
+      <div className="relative w-full h-[90vh] bg-[#050505] rounded-t-[3rem] shadow-2xl flex flex-col overflow-hidden animate-[slideUp_0.4s_ease-out] border-t border-white/10">
 
         {/* Header */}
-        <div className="flex justify-between items-center p-6 bg-white border-b border-gray-100 shrink-0">
-          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tighter">Community.</h2>
-          <button onClick={onClose} className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+        <div className="flex justify-between items-center p-8 bg-[#050505] shrink-0">
+          <h2 className="text-4xl font-black text-white tracking-tighter">Community<span className="text-emerald-500">.</span></h2>
+          <button onClick={onClose} className="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors border border-white/5 text-white/40 hover:text-white">
+            <span className="material-symbols-outlined text-xl">close</span>
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex bg-white px-4 pt-2 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.06)] shrink-0 gap-2">
+        <div className="flex bg-[#050505] px-6 shrink-0 gap-4 mb-4">
           <button
             onClick={() => setActiveTab('events')}
-            className={`flex-1 py-3 text-sm font-bold border-b-[3px] transition-colors rounded-t-lg ${
-              activeTab === 'events' ? 'border-gray-900 text-gray-900 bg-gray-50' : 'border-transparent text-gray-400 hover:text-gray-600'
+            className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-2xl border ${
+              activeTab === 'events' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-white/30 border-white/5 hover:text-white/60'
             }`}
           >
             Local Activity
           </button>
           <button
             onClick={() => setActiveTab('create')}
-            className={`flex-1 py-3 text-sm font-bold border-b-[3px] transition-colors rounded-t-lg ${
-              activeTab === 'create' ? 'border-gray-900 text-gray-900 bg-gray-50' : 'border-transparent text-gray-400 hover:text-gray-600'
+            className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-2xl border ${
+              activeTab === 'create' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-white/30 border-white/5 hover:text-white/60'
             }`}
           >
             Host Event
@@ -159,16 +157,19 @@ export default function CommunityOverlay({
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-5 bg-[#Fafafa]">
+        <div className="flex-1 overflow-y-auto p-6 bg-[#050505]">
           {/* Events Tab */}
           {activeTab === 'events' && (
             <div className="pb-12 flex flex-col gap-4">
               {!isLoaded ? (
-                <div className="flex justify-center p-8">
-                  <div className="w-8 h-8 border-[3px] border-gray-900 border-t-transparent rounded-full animate-spin" />
+                <div className="flex justify-center p-12">
+                  <div className="w-10 h-10 border-[3px] border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
                 </div>
               ) : events.length === 0 ? (
-                <p className="text-center text-gray-400 mt-10 font-medium">No community activity yet.</p>
+                <div className="py-24 flex flex-col items-center justify-center text-center opacity-10 border border-white/5 border-dashed rounded-[2.5rem]">
+                   <span className="material-symbols-outlined text-6xl mb-4 text-white">groups_3</span>
+                   <p className="text-sm font-black uppercase tracking-[0.2em] text-white">No community activity yet.</p>
+                </div>
               ) : (
                 events.map((ev) => (
                   <EventCard
@@ -193,22 +194,22 @@ export default function CommunityOverlay({
                   required type="text" value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Neighborhood Patrol"
-                  className="w-full mt-1.5 px-4 py-3.5 rounded-[1rem] border-none shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] focus:outline-none focus:bg-gray-50 bg-white text-gray-900 font-bold placeholder:font-medium transition-colors"
+                  className="w-full mt-2.5 px-6 py-4 rounded-2xl border border-white/5 bg-white/5 text-white font-bold placeholder:text-white/10 focus:outline-none focus:border-emerald-500/30 transition-all"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase">Location</label>
-                <div className="flex flex-col gap-2 mt-1">
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 pl-1">Location</label>
+                <div className="flex flex-col gap-3 mt-2.5">
                   <input
                     required type="text" value={location}
                     onChange={(e) => { 
                       setLocation(e.target.value); 
-                      setSelectedCoords(null); // Reset explicit coords if user types manually
+                      setSelectedCoords(null); 
                       setGeocodeError(''); 
                     }}
                     placeholder="e.g. Central Park"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white text-gray-900 font-medium"
+                    className="w-full px-6 py-4 rounded-2xl border border-white/5 bg-white/5 text-white font-bold placeholder:text-white/10 focus:outline-none focus:border-emerald-500/30 transition-all"
                   />
                   
                   {/* Nearby Landmarks Dropdown Menu */}
@@ -224,20 +225,20 @@ export default function CommunityOverlay({
                           setGeocodeError('');
                         }
                       }}
-                      className={`w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm font-medium cursor-pointer transition-colors ${
-                        isLoadingLandmarks ? 'bg-gray-100 text-gray-400' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                      className={`w-full px-6 py-4 rounded-2xl border focus:outline-none text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all ${
+                        isLoadingLandmarks ? 'bg-white/5 text-white/20 border-white/5' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
                       }`}
                       value=""
                       disabled={isLoadingLandmarks || landmarks.length === 0}
                     >
                       {isLoadingLandmarks ? (
-                        <option value="" disabled>⏳ Finding nearby landmarks using GPS...</option>
+                        <option value="" disabled className="bg-[#0a0a0a] text-white">⏳ GPS Locating Landmarks...</option>
                       ) : !userPosition ? (
-                        <option value="" disabled>📡 GPS location required for suggestions</option>
+                        <option value="" disabled className="bg-[#0a0a0a] text-white">📡 GPS Permission Needed</option>
                       ) : landmarks.length === 0 ? (
-                        <option value="" disabled>No nearby landmarks found</option>
+                        <option value="" disabled className="bg-[#0a0a0a] text-white">No landmarks found nearby</option>
                       ) : (
-                        <option value="" disabled>🎯 Select a nearby landmark...</option>
+                        <option value="" disabled className="bg-[#0a0a0a] text-white">🎯 Nearby Landmarks</option>
                       )}
                       
                       {landmarks.map((lm, idx) => (
@@ -265,36 +266,36 @@ export default function CommunityOverlay({
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase">Time</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 pl-1">Scheduled Time</label>
                 <input
                   required type="datetime-local" value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white text-gray-900 font-medium"
+                  className="w-full mt-2.5 px-6 py-4 rounded-2xl border border-white/5 bg-white/5 text-white font-bold focus:outline-none focus:border-emerald-500/30 transition-all [color-scheme:dark]"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase">Description</label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 pl-1">Mission Details</label>
                 <textarea
                   required value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="What is this event about?"
+                  placeholder="Environmental safety details..."
                   rows={4}
-                  className="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white resize-none text-gray-900 font-medium"
+                  className="w-full mt-2.5 px-6 py-4 rounded-2xl border border-white/5 bg-white/5 text-white font-bold placeholder:text-white/10 focus:outline-none focus:border-emerald-500/30 transition-all resize-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isGeocoding}
-                className="w-full py-4 mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-[0_4px_15px_rgba(37,99,235,0.3)] transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full py-5 mt-6 bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-[0.2em] text-[12px] rounded-2xl shadow-[0_8px_30px_rgba(16,185,129,0.2)] transition-all active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3"
               >
                 {isGeocoding ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Finding location…
+                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    Locating…
                   </>
-                ) : 'Publish Event'}
+                ) : 'Publish Mission'}
               </button>
             </form>
           )}

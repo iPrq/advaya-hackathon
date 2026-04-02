@@ -15,7 +15,7 @@ interface ChatBotProps {
   placeholder?: string;
 }
 
-// ── Speech Recognition (browser native, no TypeScript lib needed) ───────────
+// ── Speech Recognition ──────────────────────────────────
 type SRInstance = {
   lang: string; interimResults: boolean; continuous: boolean;
   onstart: (() => void) | null;
@@ -29,7 +29,7 @@ function getSR(): (new () => SRInstance) | null {
   return (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition ?? null;
 }
 
-// ── Best English voice for Web Speech fallback ──────────────────────────────
+// ── Best English voice ──────────────────────────────────
 function getBestVoice(): SpeechSynthesisVoice | null {
   if (typeof window === 'undefined') return null;
   const voices = window.speechSynthesis.getVoices();
@@ -40,7 +40,7 @@ function getBestVoice(): SpeechSynthesisVoice | null {
   return voices.find((v) => v.lang.startsWith('en') && !v.localService) ?? voices.find((v) => v.lang.startsWith('en')) ?? null;
 }
 
-// ── Groq Orpheus TTS with browser fallback ──────────────────────────────────
+// ── Groq Orpheus TTS ──────────────────────────────────
 async function speakText(
   text: string,
   audioRef: React.MutableRefObject<HTMLAudioElement | null>,
@@ -140,11 +140,10 @@ export default function ChatBot({ contextType, context, title, placeholder }: Ch
       const data = await res.json();
       setMessages((p) => [...p, { role: 'assistant', content: data.reply }]);
     } catch {
-      setMessages((p) => [...p, { role: 'assistant', content: '⚠️ Something went wrong. Please try again.' }]);
+      setMessages((p) => [...p, { role: 'assistant', content: '⚠️ Neural connection error. Please retry.' }]);
     } finally { setLoading(false); }
   };
 
-  // Voice input — hold mic
   const startMic = () => {
     const SR = getSR();
     if (!SR) { alert('Speech recognition not supported.'); return; }
@@ -183,54 +182,55 @@ export default function ChatBot({ contextType, context, title, placeholder }: Ch
   const shownInput = recording && interim ? interim : input;
 
   return (
-    <div className="rounded-2xl overflow-hidden border border-surface-container shadow-sm bg-white flex flex-col">
+    <div className="rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl bg-[#050505] flex flex-col min-h-[400px]">
 
       {/* ── Slim header bar ─────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-surface-container bg-surface-container-lowest/60">
-        <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-3.5 h-3.5 text-primary" />
+      <div className="flex items-center gap-4 px-6 py-4 border-b border-white/5 bg-white/[0.02]">
+        <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0 border border-emerald-500/20">
+          <Sparkles className="w-4 h-4 text-emerald-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-on-surface truncate">{title ?? 'AI Assistant'}</p>
-          <p className="text-[11px] text-outline">Groq · Llama 3.3 70B</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/90 truncate">{title ?? 'Assistant'}</p>
+          <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest mt-0.5">Llama 3.3 70B · Neural Flow</p>
         </div>
-        <button
-          onClick={() => { if (autoSpeak) stopAll(); setAutoSpeak((v) => !v); }}
-          title={autoSpeak ? 'Mute' : 'Unmute'}
-          className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${autoSpeak ? 'text-primary bg-primary/10' : 'text-outline bg-surface-container'}`}
-        >
-          {autoSpeak ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
-        </button>
-        <button onClick={clearChat} title="Clear" className="w-7 h-7 rounded-full flex items-center justify-center text-outline bg-surface-container transition-all hover:text-primary">
-          <RotateCcw className="w-3.5 h-3.5" />
-        </button>
-        <span className="flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[11px] text-emerald-600 font-medium">Live</span>
-        </span>
+        <div className="flex items-center gap-2">
+           <button
+             onClick={() => { if (autoSpeak) stopAll(); setAutoSpeak((v) => !v); }}
+             className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all bg-white/5 border border-white/10 ${autoSpeak ? 'text-emerald-400' : 'text-white/20'}`}
+           >
+             {autoSpeak ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+           </button>
+           <button onClick={clearChat} className="w-8 h-8 rounded-xl flex items-center justify-center text-white/20 bg-white/5 border border-white/10 hover:text-white transition-all">
+             <RotateCcw className="w-4 h-4" />
+           </button>
+           <div className="flex items-center gap-2 pl-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <span className="text-[10px] font-black text-emerald-400/80 uppercase tracking-widest">Live</span>
+           </div>
+        </div>
       </div>
 
       {/* ── Messages ────────────────────────────────────────────────────── */}
       <div
-        className="overflow-y-auto px-4 py-4 space-y-3 bg-[#f8f9fb]"
-        style={{ minHeight: '200px', maxHeight: '320px' }}
+        className="overflow-y-auto px-6 py-6 space-y-6 flex-1 bg-[#050505]"
+        style={{ maxHeight: '420px' }}
       >
         {messages.map((msg, i) => (
-          <div key={i} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={i} className={`flex items-start gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
 
-            {/* Bot avatar — left side only */}
-            {msg.role === 'assistant' && (
-              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mb-5">
-                <Bot className="w-3.5 h-3.5 text-primary" />
-              </div>
-            )}
+            {/* Avatar */}
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 border transition-all ${
+               msg.role === 'assistant' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-white/10 border-white/10 text-white'
+            }`}>
+               {msg.role === 'assistant' ? <Bot className="w-4 h-4" /> : <span className="text-[10px] font-black">YU</span>}
+            </div>
 
-            <div className={`flex flex-col gap-1 max-w-[80%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+            <div className={`flex flex-col gap-2 max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
               <div
-                className={`px-3.5 py-2.5 text-sm leading-relaxed ${
+                className={`px-5 py-4 text-sm leading-relaxed font-medium ${
                   msg.role === 'user'
-                    ? 'bg-primary text-white rounded-2xl rounded-br-md'
-                    : 'bg-white border border-surface-container text-on-surface rounded-2xl rounded-bl-md shadow-sm'
+                    ? 'bg-emerald-500 text-black rounded-3xl rounded-tr-none shadow-[0_8px_20px_rgba(16,185,129,0.1)]'
+                    : 'bg-white/5 border border-white/10 text-white rounded-3xl rounded-tl-none'
                 }`}
               >
                 {msg.content}
@@ -240,26 +240,26 @@ export default function ChatBot({ contextType, context, title, placeholder }: Ch
               {msg.role === 'assistant' && (
                 <button
                   onClick={() => handleSpeak(msg.content, i)}
-                  className={`flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full transition-all font-medium ${
+                  className={`flex items-center gap-2 text-[10px] px-3 py-1.5 rounded-full transition-all font-black uppercase tracking-widest ${
                     speakingIdx === i
-                      ? 'text-primary'
+                      ? 'text-emerald-400 bg-emerald-500/10'
                       : ttsFetchIdx === i
-                        ? 'text-outline'
-                        : 'text-outline hover:text-primary'
+                        ? 'text-white/20'
+                        : 'text-white/30 hover:text-emerald-400 hover:bg-white/5'
                   }`}
                 >
                   {ttsFetchIdx === i ? (
                     <Loader2 className="w-3 h-3 animate-spin" />
                   ) : speakingIdx === i ? (
-                    <span className="flex gap-0.5 items-end h-3">
+                    <span className="flex gap-1 items-end h-3">
                       {[0, 80, 160].map((d) => (
-                        <span key={d} className="w-0.5 rounded-full bg-primary animate-bounce" style={{ height: `${[8, 12, 8][d / 80]}px`, animationDelay: `${d}ms` }} />
+                        <span key={d} className="w-0.5 rounded-full bg-emerald-400 animate-bounce" style={{ height: `${[8, 12, 8][d / 80]}px`, animationDelay: `${d}ms` }} />
                       ))}
                     </span>
                   ) : (
                     <Volume2 className="w-3 h-3" />
                   )}
-                  {ttsFetchIdx === i ? 'Loading…' : speakingIdx === i ? 'Stop' : 'Listen'}
+                  {ttsFetchIdx === i ? 'Transmitting' : speakingIdx === i ? 'Stop' : 'Listen'}
                 </button>
               )}
             </div>
@@ -268,13 +268,13 @@ export default function ChatBot({ contextType, context, title, placeholder }: Ch
 
         {/* Typing dots */}
         {loading && (
-          <div className="flex items-end gap-2 justify-start">
-            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <Bot className="w-3.5 h-3.5 text-primary" />
+          <div className="flex items-start gap-4">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0 border border-emerald-500/20">
+              <Bot className="w-4 h-4 text-emerald-400" />
             </div>
-            <div className="bg-white border border-surface-container px-3.5 py-3 rounded-2xl rounded-bl-md shadow-sm flex gap-1 items-center">
+            <div className="bg-white/5 border border-white/10 px-6 py-5 rounded-3xl rounded-tl-none flex gap-1.5 items-center">
               {[0, 140, 280].map((d) => (
-                <span key={d} className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-bounce" style={{ animationDelay: `${d}ms` }} />
+                <span key={d} className="w-1.5 h-1.5 rounded-full bg-emerald-400/40 animate-bounce" style={{ animationDelay: `${d}ms` }} />
               ))}
             </div>
           </div>
@@ -283,23 +283,20 @@ export default function ChatBot({ contextType, context, title, placeholder }: Ch
       </div>
 
       {/* ── Input bar ───────────────────────────────────────────────────── */}
-      <div className="px-3 py-3 border-t border-surface-container bg-white">
-        <div className={`flex items-center gap-2 px-3 py-2 rounded-2xl border transition-all ${
-          recording ? 'border-red-300 bg-red-50' : 'border-surface-container bg-surface-container-lowest focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20'
+      <div className="px-6 py-6 border-t border-white/5 bg-[#0a0a0a]">
+        <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all duration-300 ${
+          recording ? 'border-red-500/50 bg-red-500/5' : 'border-white/5 bg-white/5 focus-within:border-emerald-500/30'
         }`}>
 
-          {/* Mic — hold to speak */}
           <button
             onPointerDown={startMic}
             onPointerUp={stopMic}
             onPointerLeave={stopMic}
-            title="Hold to speak"
-            className={`relative w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 select-none transition-all ${
-              recording ? 'bg-red-500 text-white' : 'text-outline hover:text-primary'
+            className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${
+              recording ? 'bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.3)]' : 'bg-white/5 text-white/30 hover:text-emerald-400'
             }`}
           >
-            <Mic className="w-4 h-4" />
-            {recording && <span className="absolute inset-0 rounded-xl bg-red-400/40 animate-ping" />}
+            <Mic className="w-5 h-5" />
           </button>
 
           <input
@@ -308,23 +305,25 @@ export default function ChatBot({ contextType, context, title, placeholder }: Ch
             value={shownInput}
             onChange={(e) => !recording && setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-            placeholder={recording ? 'Listening…' : (placeholder ?? 'Ask a question…')}
+            placeholder={recording ? 'Neural Listening...' : (placeholder ?? 'Query context...')}
             readOnly={recording}
-            className="flex-1 bg-transparent text-sm outline-none text-on-surface placeholder:text-outline/60"
+            className="flex-1 bg-transparent text-sm outline-none text-white placeholder:text-white/10 font-medium"
           />
 
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading || recording}
-            className="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center disabled:opacity-35 active:scale-90 transition-all flex-shrink-0"
+            className="w-10 h-10 rounded-xl bg-emerald-500 text-black flex items-center justify-center disabled:opacity-20 active:scale-95 transition-all flex-shrink-0 shadow-lg shadow-emerald-500/10"
           >
-            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </button>
         </div>
 
-        <p className="text-center text-[10px] text-outline/50 mt-1.5">
-          {recording ? '🔴 Release to finish' : 'Hold mic · type · press ↵ to send'}
-        </p>
+        <div className="mt-4 flex justify-center items-center gap-4 text-[9px] font-black uppercase tracking-[0.2em] text-white/10">
+           <span>Hold mic for neural input</span>
+           <span className="w-1 h-1 rounded-full bg-white/10" />
+           <span>Press ↵ to transmit</span>
+        </div>
       </div>
     </div>
   );

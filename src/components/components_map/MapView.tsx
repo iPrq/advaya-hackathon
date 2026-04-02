@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Circle, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { GeoPosition, SafeZone, CommunityEvent, NearbyUser } from '../types';
+import { GeoPosition, SafeZone, CommunityEvent, NearbyUser } from '@/lib/types';
 
 // ─── Map Center Update (initial GPS sync) ───────────────────────────────────
 function MapUpdater({ center }: { center: GeoPosition | null }) {
@@ -78,10 +78,10 @@ const createNearbyUserIcon = (seed: number) => {
         position: relative;
         width: 38px; height: 38px;
         display: flex; align-items: center; justify-content: center;
-        background-color: white;
+        background-color: #0a0a0a;
         border-radius: 50%;
-        border: 3px solid ${color};
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: 2px solid ${color};
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         font-size: 20px;
         z-index: 10;
       ">
@@ -91,7 +91,7 @@ const createNearbyUserIcon = (seed: number) => {
           width: 8px; height: 8px;
           background-color: ${color};
           border-radius: 50%;
-          border: 2px solid white;
+          border: 2px solid #0a0a0a;
         "></div>
       </div>
     `,
@@ -110,8 +110,8 @@ const createCustomIcon = (color: 'blue' | 'red' | 'purple') => {
         background-color: ${hexColor};
         width: 16px; height: 16px;
         border-radius: 50%;
-        border: 3px solid white;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        border: 2px solid #0a0a0a;
+        box-shadow: 0 0 15px rgba(0,0,0,0.8);
       "></div>
       <div style="
         position: absolute; top: -8px; left: -8px;
@@ -154,6 +154,7 @@ export default function MapView({ userPosition, safeZone, events = [], nearbyUse
         zoom={userPosition ? 16 : 2}
         zoomControl={false}
         className="w-full h-full"
+        style={{ filter: 'invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%)' }}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -172,9 +173,9 @@ export default function MapView({ userPosition, safeZone, events = [], nearbyUse
             position={[userPosition.lat, userPosition.lng]} 
             icon={createUserIcon()}
           >
-            <Popup className="rounded-xl overflow-hidden shadow-lg border-0">
-              <div className="p-1 px-2 text-center">
-                <span className="font-bold text-gray-900 text-sm">You are here</span>
+            <Popup className="rounded-xl overflow-hidden shadow-2xl border-0">
+              <div className="p-1 px-2 text-center bg-[#0a0a0a] text-white">
+                <span className="font-bold text-[10px] uppercase tracking-widest opacity-60">You are here</span>
               </div>
             </Popup>
           </Marker>
@@ -187,11 +188,11 @@ export default function MapView({ userPosition, safeZone, events = [], nearbyUse
             position={[user.position.lat, user.position.lng]}
             icon={createNearbyUserIcon(user.avatarSeed)}
           >
-            <Popup className="rounded-xl overflow-hidden shadow-lg border-0">
-              <div className="p-2 text-center min-w-[120px]">
-                <p className="font-bold text-gray-900 mb-0.5">Nearby User</p>
-                <div className="flex items-center gap-1 mt-1 justify-center text-xs text-gray-500 font-medium bg-gray-50 px-2 py-1 rounded-full">
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            <Popup className="rounded-xl overflow-hidden shadow-2xl border-0">
+              <div className="p-2 text-center min-w-[120px] bg-[#0a0a0a] text-white">
+                <p className="font-bold text-xs mb-1 uppercase tracking-tight text-white/90">Nearby User</p>
+                <div className="flex items-center gap-2 mt-1 justify-center text-[10px] text-white/40 font-black uppercase tracking-widest bg-white/5 px-2 py-1.5 rounded-xl">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse" />
                   Active recently
                 </div>
               </div>
@@ -206,7 +207,7 @@ export default function MapView({ userPosition, safeZone, events = [], nearbyUse
             <Circle
               center={[safeZone.center.lat, safeZone.center.lng]}
               radius={safeZone.radius}
-              pathOptions={{ color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.15, weight: 2, dashArray: '5, 5' }}
+              pathOptions={{ color: '#10b981', fillColor: '#10b981', fillOpacity: 0.1, weight: 2, dashArray: '8, 8' }}
             />
           </>
         )}

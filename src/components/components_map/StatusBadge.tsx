@@ -1,5 +1,5 @@
 import React from 'react';
-import { GeofenceStatus } from '../types';
+import { GeofenceStatus } from '@/lib/types';
 
 interface StatusBadgeProps {
   status: GeofenceStatus;
@@ -13,22 +13,22 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
   return (
     <div className={`absolute top-6 left-6 z-50 transition-all duration-300 transform ${isInside ? 'scale-100' : 'scale-[1.02]'}`}>
       <div 
-        className={`px-5 py-2.5 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-xl font-bold text-xs tracking-tight flex items-center gap-2.5 border
+        className={`px-5 py-2 rounded-full shadow-2xl backdrop-blur-xl font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 border
           ${isInside 
-            ? 'bg-white/90 text-gray-900 border-white/20' 
-            : 'bg-black/90 text-white border-black/20 shadow-[0_8px_40px_rgba(239,68,68,0.3)] animate-pulse'
+            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.1)]' 
+            : 'bg-red-500/10 text-red-400 border-red-500/20 shadow-[0_0_40px_rgba(239,68,68,0.2)] animate-pulse'
           }
         `}
       >
         {isInside ? (
           <>
-            <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
-            Protected Zone
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse" />
+            Protected
           </>
         ) : (
           <>
-            <div className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-pulse" />
-            Area Unsecured
+            <div className="w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_12px_rgba(239,68,68,0.8)]" />
+            Unsecured
           </>
         )}
       </div>

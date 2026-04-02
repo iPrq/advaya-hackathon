@@ -18,10 +18,10 @@ import BottomNav from '@/components/BottomNav';
 const DynamicMapView = dynamic(() => import('@/components/components_map/MapView'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-screen bg-gray-100 flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-gray-500 font-medium">Loading Map...</p>
+    <div className="w-full h-screen bg-[#050505] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-6">
+        <div className="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+        <p className="text-white/20 text-sm font-black uppercase tracking-[0.3em]">Initializing Map Engine</p>
       </div>
     </div>
   ),
@@ -164,7 +164,7 @@ export default function MapPage() {
   }, [trackingState]);
 
   return (
-    <main className="relative w-full min-h-screen overflow-hidden bg-gray-50 flex flex-col">
+    <main className="relative w-full min-h-screen overflow-hidden bg-[#050505] flex flex-col">
       <StatusBadge status={status} />
 
       {/* Floating Header Actions (Top Right) */}
@@ -172,19 +172,19 @@ export default function MapPage() {
         <button
           onClick={handleRefreshMap}
           disabled={isRefreshingUsers || !userPosition}
-          className="bg-white/90 backdrop-blur-xl px-5 py-2.5 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/20 text-gray-900 font-bold text-xs tracking-tight flex items-center justify-center gap-2 hover:bg-white transition-all active:scale-[0.98] disabled:opacity-50 min-w-[120px]"
+          className="bg-white/5 backdrop-blur-xl px-5 py-3 rounded-full shadow-2xl border border-white/10 text-white font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-white/10 transition-all active:scale-[0.98] disabled:opacity-20 min-w-[140px]"
         >
-          <svg className={`w-4 h-4 text-gray-900 ${isRefreshingUsers ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className={`w-4 h-4 text-emerald-400 ${isRefreshingUsers ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          {isRefreshingUsers ? 'Scanning...' : 'Refresh'}
+          {isRefreshingUsers ? 'Scanning' : 'Refresh'}
         </button>
 
         <button
           onClick={() => setIsCommunityOpen(true)}
-          className="bg-white/90 backdrop-blur-xl px-5 py-2.5 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/20 text-gray-900 font-bold text-xs tracking-tight flex items-center gap-2 hover:bg-white transition-all active:scale-[0.98]"
+          className="bg-white/5 backdrop-blur-xl px-5 py-3 rounded-full shadow-2xl border border-white/10 text-white font-bold text-[10px] uppercase tracking-widest flex items-center gap-3 hover:bg-white/10 transition-all active:scale-[0.98]"
         >
-          <svg className="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
           Community

@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import FinanceSummary from '@/components/FinanceSummary';
-import BottomNav from '@/components/BottomNav';
 
 export default function HomePage() {
   const router = useRouter();
@@ -109,7 +108,6 @@ export default function HomePage() {
         </div>
       </main>
 
-      <BottomNav />
 
       <style jsx global>{`
         @font-face {

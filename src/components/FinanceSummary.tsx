@@ -8,7 +8,7 @@ import { useSMSListener } from '../hooks/useSMSListener';
 const STORAGE_KEY = 'geofence_guardian_finance';
 
 /**
- * FinanceSummary — exportable summary card for the Finance page.
+ * FinanceSummary — exportable summary card for the Home page.
  * Reads from the same localStorage key as the full Finance page,
  * so data is always in sync. No props needed.
  */
@@ -55,109 +55,110 @@ export default function FinanceSummary() {
   const recent = transactions.slice(0, 3);
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-surface-container overflow-hidden">
+    <div className="bg-white/[0.03] rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl backdrop-blur-3xl">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-5 pb-3">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
-            <span className="text-primary font-black text-sm">₹</span>
+      <div className="flex items-center justify-between px-8 pt-8 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+            <span className="text-emerald-400 font-black text-lg">₹</span>
           </div>
-          <h2 className="text-base font-bold text-on-surface">Finance</h2>
+          <div>
+            <h2 className="text-lg font-bold text-white/90 leading-none">Clinical Credits</h2>
+            <p className="text-[10px] text-white/20 font-black uppercase tracking-widest mt-1.5">Automated Extraction</p>
+          </div>
         </div>
         <Link
           href="/finance"
-          className="text-xs font-bold text-primary hover:opacity-80 transition-colors"
+          className="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-500/5 px-4 py-2 rounded-full border border-emerald-500/10"
         >
-          View All →
+          View Ledger
         </Link>
       </div>
 
-      {/* Balance */}
-      <div className="px-5 pb-3">
-        <p className="text-[10px] font-bold text-outline uppercase tracking-widest mb-0.5">
-          Balance
-        </p>
-        <p
-          className={`text-3xl font-headline font-black ${
-            balance >= 0 ? 'text-primary' : 'text-error'
-          }`}
-        >
-          ₹{balance.toLocaleString('en-IN')}
-        </p>
+      {/* Balance Section */}
+      <div className="px-8 pb-6">
+        <div className="flex flex-col gap-1">
+           <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">Current Balance</span>
+           <p className={`text-5xl font-black tracking-tighter ${balance >= 0 ? 'text-white' : 'text-red-400'}`}>
+             ₹{balance.toLocaleString('en-IN')}
+           </p>
+        </div>
       </div>
 
-      {/* Income / Expense row */}
-      <div className="grid grid-cols-2 gap-px bg-surface-container border-t border-b border-surface-container">
-        <div className="bg-white px-5 py-3">
-          <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-0.5">
-            Income
+      {/* Income / Expense Stats */}
+      <div className="grid grid-cols-2 gap-4 px-8 pb-8">
+        <div className="bg-white/5 p-5 rounded-3xl border border-white/5">
+          <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+            <span className="w-1 h-1 rounded-full bg-emerald-400" />
+            Total Deposit
           </p>
-          <p className="text-sm font-bold font-headline text-on-surface">
+          <p className="text-xl font-black text-white">
             ₹{income.toLocaleString('en-IN')}
           </p>
         </div>
-        <div className="bg-white px-5 py-3">
-          <p className="text-[10px] font-bold text-error uppercase tracking-widest mb-0.5">
-            Expenses
+        <div className="bg-white/5 p-5 rounded-3xl border border-white/5">
+          <p className="text-[9px] font-black text-red-400 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+            <span className="w-1 h-1 rounded-full bg-red-400" />
+            Vitals Cost
           </p>
-          <p className="text-sm font-bold font-headline text-on-surface">
+          <p className="text-xl font-black text-white">
             ₹{expense.toLocaleString('en-IN')}
           </p>
         </div>
       </div>
 
-      {/* Recent transactions */}
-      <div className="px-5 pt-3 pb-5">
-        <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-2">
-          Recent
-        </p>
+      {/* Recent History Table-style */}
+      <div className="px-8 pb-8">
+        <div className="flex items-center justify-between mb-4 px-1">
+           <h3 className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Recent Activity</h3>
+           <div className="flex gap-1">
+              {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 rounded-full bg-white/10" />)}
+           </div>
+        </div>
+        
         {recent.length === 0 ? (
-          <p className="text-xs text-outline py-2 text-center italic">
-            No transactions yet
-          </p>
+          <div className="py-6 flex flex-col items-center justify-center opacity-20 border border-dashed border-white/10 rounded-2xl">
+             <span className="material-symbols-outlined text-3xl mb-2">payments</span>
+             <p className="text-[10px] font-bold uppercase tracking-widest">No transaction feed detected</p>
+          </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             {recent.map((t) => (
-              <div key={t.id} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                      t.type === 'income'
-                        ? 'bg-emerald-50 text-emerald-600'
-                        : 'bg-error-container text-on-error-container'
-                    }`}
-                  >
-                    {t.type === 'income' ? (
-                      <span className="material-symbols-outlined text-sm">add</span>
-                    ) : (
-                      <span className="material-symbols-outlined text-sm">remove</span>
-                    )}
+              <div key={t.id} className="flex items-center justify-between p-4 bg-white/[0.02] rounded-2xl border border-white/5 hover:bg-white/5 transition-all group">
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
+                    t.type === 'income'
+                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                      : 'bg-red-500/10 border-red-500/20 text-red-400'
+                  }`}>
+                    <span className="material-symbols-outlined text-lg">
+                       {t.type === 'income' ? 'south_west' : 'north_east'}
+                    </span>
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-on-surface leading-none">
+                    <p className="text-xs font-black text-white/90 leading-none">
                       {t.category}
                     </p>
-                    <p className="text-[10px] text-outline mt-0.5">
+                    <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest mt-1.5">
                       {new Date(t.date).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
+                        year: '2-digit'
                       })}
                     </p>
                   </div>
                 </div>
-                <p
-                  className={`text-xs font-headline font-black ${
-                    t.type === 'income' ? 'text-emerald-600' : 'text-error'
-                  }`}
-                >
-                  {t.type === 'income' ? '+' : '-'}₹
-                  {t.amount.toLocaleString('en-IN')}
+                <p className={`text-sm font-black ${t.type === 'income' ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {t.type === 'income' ? '+' : '-'}₹{t.amount.toLocaleString('en-IN')}
                 </p>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Decorative Neural Scan line at bottom */}
+      <div className="h-1 w-full bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
     </div>
   );
 }

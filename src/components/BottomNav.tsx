@@ -2,53 +2,67 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Home, ShieldHalf, Globe, CreditCard, Compass } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function BottomNav() {
   const pathname = usePathname();
 
-  const navItems = [
-    { label: 'Home', path: '/home', icon: 'medical_services' },
-    { label: 'Safety', path: '/safety', icon: 'security' },
-    { label: 'Web', path: '/web', icon: 'language' },
-    { label: 'Finance', path: '/finance', icon: 'payments' },
-    { label: 'Map', path: '/map', icon: 'map' },
+  const tabs = [
+    { id: "home", href: "/home", icon: Home },
+    { id: "safety", href: "/safety", icon: ShieldHalf },
+    { id: "web", href: "/web", icon: Globe },
+    { id: "finance", href: "/finance", icon: CreditCard },
+    { id: "map", href: "/map", icon: Compass },
   ];
 
+  const activeIndex = tabs.findIndex((t) => t.id === pathname.split('/')[1] || t.href === pathname);
+  const safeIndex = activeIndex === -1 ? 0 : activeIndex;
+
   return (
-    <div className="fixed bottom-8 left-0 right-0 z-[100] flex justify-center px-6 pointer-events-none">
-      <nav className="pointer-events-auto flex items-center justify-around w-full max-w-lg glass rounded-[2.5rem] px-4 py-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/10 overflow-hidden">
-        {navItems.map((item) => {
-          const isActive = pathname === item.path;
+    <div className="fixed bottom-6 left-0 right-0 z-[100] flex justify-center px-6 pb-[env(safe-area-inset-bottom,0px)] pointer-events-none">
+      <nav
+        className="pointer-events-auto relative flex items-center w-full max-w-sm bg-black/25 border-t border-white/5 backdrop-blur-xl rounded-full p-2 shadow-2xl overflow-hidden"
+        style={{ fontFamily: "var(--font-poppins), system-ui, sans-serif" }}
+      >
+        {/* Strictly Linear Sliding Indicator (No Spring/Bounce) */}
+        <div className="absolute inset-0 flex items-center px-2 pointer-events-none">
+           <motion.div
+              animate={{ x: `${safeIndex * 100}%` }}
+              transition={{
+                type: "tween", // Switched from spring to tween for zero bounce
+                ease: [0.2, 1, 0.3, 1], // Custom medical-grade glide ease
+                duration: 0.35
+              }}
+              className="w-[20%] h-[80%] rounded-full border border-emerald-500/20 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+           />
+        </div>
+
+        {/* Action Tabs */}
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = pathname === tab.href;
+
           return (
             <Link
-              key={item.path}
-              href={item.path}
-              className={`relative flex flex-col items-center justify-center min-w-[64px] transition-all duration-300 ${
-                isActive ? 'text-emerald-400 scale-110' : 'text-gray-400 hover:text-white hover:scale-105'
-              }`}
+              key={tab.id}
+              href={tab.href}
+              className="group relative flex-1 flex items-center justify-center h-12 outline-none"
             >
-              <div className="relative">
-                <span 
-                  className={`material-symbols-outlined text-[24px] transition-all duration-300 ${
-                    isActive ? 'opacity-100' : 'opacity-70'
-                  }`}
-                  style={{ 
-                    fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
-                    textShadow: isActive ? '0 0 15px rgba(52, 211, 153, 0.4)' : 'none'
+              <div className="relative flex items-center justify-center">
+                <Icon
+                  size={22}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  stroke={isActive ? "#34d399" : "rgba(255, 255, 255, 0.2)"}
+                  fill="none"
+                  className="transition-all duration-300"
+                  style={{
+                    filter: isActive
+                      ? "drop-shadow(0 0 8px rgba(52, 211, 153, 0.5))"
+                      : "none",
                   }}
-                >
-                  {item.icon}
-                </span>
-                
-                {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-emerald-400" />
-                )}
+                />
               </div>
-              <span className={`text-[10px] font-bold uppercase tracking-widest mt-1 transition-all duration-300 ${
-                isActive ? 'opacity-100' : 'opacity-0 h-0 scale-50'
-              }`}>
-                {item.label}
-              </span>
             </Link>
           );
         })}

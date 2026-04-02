@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import CapacitorLoader from "@/components/CapacitorLoader";
+import BottomNav from "@/components/BottomNav";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body className="font-body min-h-full flex flex-col bg-background text-on-surface">
         <CapacitorLoader />
         {children}
+        <BottomNav />
       </body>
     </html>
   );

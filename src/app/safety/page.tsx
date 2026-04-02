@@ -2,24 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { LineChart, Line, ResponsiveContainer, YAxis, Tooltip } from 'recharts';
-import { Activity, ShieldCheck, WifiOff } from 'lucide-react';
+import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
+import { Activity, ShieldCheck } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 
 export default function SafetyPage() {
   const [emergencyEmail, setEmergencyEmail] = useState('');
   const [emailStatus, setEmailStatus] = useState<string | null>(null);
   
-  // Real-time CSI Stream Data
   const [csiData, setCsiData] = useState<{ index: number; amplitude: number }[]>([]);
   const [prediction, setPrediction] = useState<string>("NO_FALL");
   const [networkError, setNetworkError] = useState(false);
 
   useEffect(() => {
     const ws = new WebSocket('wss://iprq-hackathonadvaya.hf.space/');
-
     ws.onopen = () => setNetworkError(false);
-    
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -29,10 +26,8 @@ export default function SafetyPage() {
         }
       } catch (e) {}
     };
-
     ws.onerror = () => setNetworkError(true);
     ws.onclose = () => setNetworkError(true);
-
     return () => ws.close();
   }, []);
 
@@ -43,121 +38,116 @@ export default function SafetyPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emergencyEmail })
       });
-      if (res.ok) setEmailStatus('Saved successfully!');
+      if (res.ok) setEmailStatus('Contact updated');
       setTimeout(() => setEmailStatus(null), 3000);
     } catch (e) {
-      setEmailStatus('Failed to save.');
+      setEmailStatus('Failed to update');
     }
   };
 
   return (
-    <div className="min-h-screen text-on-surface bg-background">
-      {/* HEADER */}
-      <header className="bg-surface/80 backdrop-blur-md top-0 sticky z-50 flex justify-between items-center w-full px-6 py-4">
-        <div className="flex items-center gap-3">
-          <Link href="/home" className="text-outline hover:text-primary transition-colors">
-            <span className="material-symbols-outlined">arrow_back</span>
-          </Link>
-          <h1 className="text-xl font-headline font-bold text-on-surface tracking-tight">Safety</h1>
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-emerald-500/30">
+      {/* Premium Header */}
+      <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[#050505]/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-4">
+          <div className="flex items-center gap-3">
+            <Link href="/home" className="text-white/40 hover:text-white transition-colors">
+              <span className="material-symbols-outlined text-xl">arrow_back</span>
+            </Link>
+            <h1 className="text-lg font-bold tracking-tight text-white/90">Safety Monitor</h1>
+          </div>
+          <div className={`h-1.5 w-1.5 rounded-full ${networkError ? 'bg-red-500' : 'bg-emerald-500 animate-pulse'}`} />
         </div>
-        <div className="w-2 h-2 rounded-full bg-emerald-500" title="Monitoring active" />
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 pt-8 pb-32">
-        <div className="bg-surface-container-low rounded-[2rem] p-8 border border-surface-container shadow-sm relative overflow-hidden">
-          <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="material-symbols-outlined text-2xl text-primary">security</span>
-              <h2 className="text-2xl font-headline font-extrabold text-on-surface">Fall Detection</h2>
-            </div>
-            <p className="text-on-surface-variant font-body mb-8">
-              Wi-Fi CSI monitoring is <strong className="text-emerald-600">active</strong> in the background.
-              Your emergency contact receives an instant alert if a fall is detected.
-            </p>
+      <main className="mx-auto max-w-4xl px-5 pt-10 pb-40">
+        <section className="mb-8 px-1">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400/80 mb-1">Aegis Protection</p>
+          <h2 className="text-3xl font-bold tracking-tight text-white">Fall Detection</h2>
+        </section>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-surface-container mb-6">
-              <h3 className="font-bold font-headline text-lg mb-2">Emergency Contact Email</h3>
-              <p className="text-sm text-outline mb-4">Set the email address of your caretaker to receive instant alerts.</p>
-              <div className="flex gap-3">
-                <input 
-                  type="email" 
-                  value={emergencyEmail}
-                  onChange={(e) => setEmergencyEmail(e.target.value)}
-                  placeholder="caretaker@example.com" 
-                  className="flex-1 rounded-xl border-outline-variant bg-surface  focus:ring-2 focus:ring-primary focus:border-primary text-sm px-4 py-3 outline-none transition-all"
-                />
-                <button 
-                  onClick={saveEmergencyContact}
-                  className="bg-primary text-white font-bold px-6 py-3 rounded-xl hover:opacity-90 active:scale-95 transition-all"
-                >
-                  Save
-                </button>
-              </div>
-              {emailStatus && <p className="text-sm font-bold text-emerald-600 mt-3">{emailStatus}</p>}
-            </div>
-
-            {/* REAL-TIME CSI STREAM */}
-            <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-surface-container relative overflow-hidden">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="font-bold font-headline text-lg text-on-surface flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-primary" /> 
-                    Live CSI Stream
-                  </h3>
-                  <p className="text-sm text-outline">Monitoring spatial subcarrier amplitude</p>
-                </div>
-                
-                {/* Status Badge */}
-                <div className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 ${
-                  networkError 
-                    ? 'bg-error-container text-on-error-container' 
-                    : prediction === "FALL" 
-                      ? 'bg-error text-white animate-pulse shadow-[0_0_15px_rgba(200,50,50,0.6)]' 
-                      : 'bg-emerald-100 text-emerald-700'
-                }`}>
-                  {networkError ? (
-                    <><WifiOff className="w-3.5 h-3.5" /> Offline</>
-                  ) : prediction === "FALL" ? (
-                    <><span className="w-2 h-2 bg-white rounded-full animate-ping" /> Fall Detected!</>
-                  ) : (
-                    <><ShieldCheck className="w-3.5 h-3.5" /> Secure</>
-                  )}
-                </div>
+        {/* Main Status Card */}
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 p-8 mb-6">
+           <div className="flex flex-col md:flex-row justify-between gap-8 mb-10">
+              <div className="space-y-4">
+                 <div className="flex items-center gap-2">
+                    <ShieldCheck className={`w-5 h-5 ${prediction === "FALL" ? 'text-red-400' : 'text-emerald-400'}`} />
+                    <span className="text-xs font-bold uppercase tracking-widest text-white/30">Environment Status</span>
+                 </div>
+                 <div>
+                    <h3 className={`text-4xl font-bold tracking-tighter ${prediction === "FALL" ? 'text-red-400' : 'text-white'}`}>
+                       {networkError ? 'Offline' : prediction === "FALL" ? 'FALL ALERT' : 'SECURE'}
+                    </h3>
+                    <p className="text-white/40 text-sm mt-1">CSI Monitoring is active in the background.</p>
+                 </div>
               </div>
 
-              {/* Chart container */}
-              <div className="w-full h-48 bg-surface-container/30 rounded-xl relative border border-surface-container-high border-dashed pt-4">
-                {csiData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={csiData}>
-                      <YAxis domain={[-30, 90]} hide />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#ffffff', borderRadius: '1rem', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        itemStyle={{ color: '#0ea5e9', fontWeight: 'bold' }}
-                        labelFormatter={(label) => `Subcarrier ${label}`}
-                        formatter={(value: any) => [Number(value).toFixed(2), 'Amplitude']}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="amplitude" 
-                        stroke={prediction === "FALL" ? "#ef4444" : "#0ea5e9"} 
-                        strokeWidth={3} 
-                        dot={false}
-                        isAnimationActive={false}
-                        style={{ filter: prediction === "FALL" ? "drop-shadow(0px 0px 8px rgba(239,68,68,0.6))" : "drop-shadow(0px 0px 6px rgba(14,165,233,0.3))" }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-outline text-sm">
-                    <span className="material-symbols-outlined animate-spin mb-2">sync</span>
-                    Connecting to sensor stream...
-                  </div>
-                )}
+              <div className="flex flex-col justify-center">
+                 <div className="w-full md:w-64 h-24 relative opacity-40">
+                    {csiData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={csiData}>
+                          <YAxis domain={[-30, 90]} hide />
+                          <Line 
+                            type="monotone" 
+                            dataKey="amplitude" 
+                            stroke={prediction === "FALL" ? "#f87171" : "#10b981"} 
+                            strokeWidth={2} 
+                            dot={false}
+                            isAnimationActive={false}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-[10px] text-white/20 uppercase tracking-widest">
+                         Connecting to sensor...
+                      </div>
+                    )}
+                 </div>
               </div>
-            </div>
+           </div>
 
-          </div>
+           <div className="h-[1px] w-full bg-white/5 mb-8" />
+
+           {/* Emergency Config Inline */}
+           <div className="flex flex-col sm:flex-row gap-3">
+              <input 
+                type="email" 
+                value={emergencyEmail}
+                onChange={(e) => setEmergencyEmail(e.target.value)}
+                placeholder="Caretaker email" 
+                className="flex-1 bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 outline-none text-white text-sm focus:border-emerald-500/30 transition-all placeholder:text-white/20"
+              />
+              <button 
+                onClick={saveEmergencyContact}
+                className="bg-white text-black font-bold px-8 py-4 rounded-2xl hover:bg-emerald-400 active:scale-95 transition-all text-sm whitespace-nowrap"
+              >
+                Update Alert
+              </button>
+           </div>
+           {emailStatus && <p className="text-[10px] font-bold text-emerald-400 mt-4 uppercase tracking-widest px-1">{emailStatus}</p>}
+        </div>
+
+        {/* Feature Grid - Matches /home style cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+           <div className="p-8 rounded-[2rem] bg-white/5 border border-white/5">
+              <span className="material-symbols-outlined text-emerald-400/50 mb-4">sensors</span>
+              <h4 className="font-bold text-sm mb-2 uppercase tracking-wide">CSI Monitoring</h4>
+              <p className="text-white/40 text-xs leading-relaxed">
+                Uses Wi-Fi signal interference analysis to detect falls without invading privacy via cameras.
+              </p>
+           </div>
+           <div className="p-8 rounded-[2rem] bg-white/5 border border-white/5">
+              <span className="material-symbols-outlined text-emerald-400/50 mb-4">emergency_share</span>
+              <h4 className="font-bold text-sm mb-2 uppercase tracking-wide">Instant Alerts</h4>
+              <p className="text-white/40 text-xs leading-relaxed">
+                Automatically notifies your caretaker via encrypted email protocols the moment a fall is detected.
+              </p>
+           </div>
+        </div>
+
+        <div className="mt-20 text-center opacity-10 text-[10px] font-black uppercase tracking-[0.5em]">
+           Aegis Medical Companion
         </div>
       </main>
 
