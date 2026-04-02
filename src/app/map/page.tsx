@@ -10,7 +10,6 @@ import Controls from '@/components/components_map/Controls';
 import StatusBadge from '@/components/components_map/StatusBadge';
 import AlertBanner from '@/components/components_map/AlertBanner';
 import CommunityOverlay from '@/components/components_map/CommunityOverlay';
-import { getMockNearbyUsers } from '@/utils/mockNearbyUsers';
 import { useCommunity } from '@/hooks/useCommunity';
 import BottomNav from '@/components/BottomNav';
 
@@ -62,11 +61,12 @@ export default function MapPage() {
         }
       }
 
-      // Use the local mock logic for testing/demo purposes since Hugging Face is constrained
-      const data = getMockNearbyUsers(userPosition.lat, userPosition.lng, 10, mapUserId);
+      // Fetching from your deployed Hugging Face backend
+      const res = await fetch(`https://iprq-hackathonadvaya.hf.space/api/nearby-users?lat=${userPosition.lat}&lng=${userPosition.lng}&radius=10&user_id=${mapUserId}`);
+      const data = await res.json();
       
-      // Ensure we set an array, even if empty
-      setNearbyUsers(Array.isArray(data) ? data : []);
+      // Ensure we set an array, even if the API returns { users: [...] } or an error object
+      setNearbyUsers(Array.isArray(data) ? data : data.users || data.data || []);
     } catch (error) {
       console.error('Failed to fetch nearby users', error);
 
